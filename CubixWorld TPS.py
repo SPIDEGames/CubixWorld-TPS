@@ -11,17 +11,25 @@ API_URL = "https://cubixworld.net/api/monitoring"
 
 # Функция для получения данных о серверах
 def fetch_server_data():
-    response = requests.get(API_URL)
-    if response.status_code == 200:
-        return response.json()['servers']
-    else:
+    try:
+        response = requests.get(API_URL)
+        if response.status_code == 200:
+            print("Успешно получены данные серверов")
+            return response.json()['servers']
+        else:
+            print("API вернула ошибку")
+            return None
+    except Exception as e:
+        print(f"Произошла ошибка: {e}")
         return None
 
 # Функция для получения TPS выбранного сервера
 def get_tps(main_server, sub_server_num):
     data = fetch_server_data()
     if data and main_server in data and sub_server_num in data[main_server]['servers']:
+        print("Успешно получено значение TPS для выбранного сервера")
         return round(data[main_server]['servers'][sub_server_num]['tps'])  # Округляем до целого числа
+    print("Не удалось получить значение TPS для выбранного сервера")
     return "N/A"
 
 # Функция для обновления иконки
@@ -30,7 +38,8 @@ def update_icon(icon, main_server, sub_server_num):
         tps = get_tps(main_server, sub_server_num)
         image = create_image(tps)
         icon.icon = image
-        time.sleep(1)  # обновляем каждые 10 секунд
+        print("Успешно выведено значение TPS в трее")
+        time.sleep(3)  
 
 # Функция для создания изображения с TPS
 def create_image(tps):
@@ -64,7 +73,7 @@ def create_image(tps):
     # Центрируем текст на картинке с вертикальной поправкой
     position = ((width - text_width) // 2, (height - text_height) // 2 - 5)  # Добавляем -5 для вертикального центрирования
     draw.text(position, text, fill=color, font=font)
-
+    print("Успешно создано изображение")
     return image
 
 # Функция для изменения сервера
